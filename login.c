@@ -4,11 +4,9 @@
 #include <string.h>
 
 bool containChar(char c, char *list) {
-  int len = strlen(list), i = 0;
-
-  while (i < len) {
-    if (c == list[i]) return true;
-    i++;
+  while (*list != '\0') {
+    if (c == *list) return true;
+    list++;
   }
 
   return false;
@@ -37,12 +35,24 @@ char *html =
 void printHTML(char *output) {
   printf("Content-type: text/html\n\n");
   printf(html, output);
+  puts("");
+}
+
+void verify(char *id, char *pass) {
+  if (strcmp(id, "root") == 0 && strcmp(pass, "password") == 0)
+    printHTML("hello, root");
+  else
+    printHTML(
+        "<script>\
+          alert('try again');\
+          history.go(-1);\
+        </script>");
 }
 
 void login() {
   char buf[512];
-  char id[128];
-  char pass[128];
+  char id[128] = {0};
+  char pass[128] = {0};
   int length;
 
   // read data
@@ -65,14 +75,15 @@ void login() {
     }
 
     // store data
+    //    int dataLength = strlen(data);
     if (strcmp(name, "id") == 0)
-      strncpy(id, data, strlen(data));
+      strcpy(id, data);
     else if (strcmp(name, "pass") == 0)
-      strncpy(pass, data, strlen(data));
+      strcpy(pass, data);
   }
 
   // send result
-  printHTML(id);
+  verify(id, pass);
 }
 
 int main() {
